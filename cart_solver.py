@@ -1,10 +1,13 @@
 import numpy as np
 import gym
 
+from model import Model
 
 if __name__ == '__main__':
     NUM_EPISODES = 500
-    MAX_STEPS = 100
+    MAX_STEPS = 500
+
+    model = Model()
 
     env = gym.make("CartPole-v1")
 
@@ -14,10 +17,11 @@ if __name__ == '__main__':
         for step in range(MAX_STEPS):
             env.render()
 
-            action = env.action_space.sample()
-            observation, reward, done, info = env.step(action)
+            action = model.getAction(env.action_space)
+            obs_space, reward, done, info = env.step(action)
 
             if done:
+                print("Episode", episode, "finished after", step, "steps")
                 break
 
     env.close()
