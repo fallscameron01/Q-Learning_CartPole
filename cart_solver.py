@@ -13,17 +13,21 @@ if __name__ == '__main__':
 
     for episode in range(NUM_EPISODES):
         obsSpace = env.reset()
-
-        model.saveState(obsSpace)
+        state = model.convertState(obsSpace)
+        model.saveState(state)
 
         for step in range(MAX_STEPS):
             env.render()
 
-            action = model.getAction(env.action_space, obsSpace)
+            action = model.getAction(env.action_space, state)
+
             newObsSpace, reward, done, info = env.step(action)
 
+            newState = model.convertState(newObsSpace)
+            model.saveState(newState)
+
             obsSpace = newObsSpace
-            model.saveState(obsSpace)
+            state = newState
 
             if done:
                 print("Episode", episode, "finished after", step, "steps")
