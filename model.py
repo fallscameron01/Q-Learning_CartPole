@@ -35,16 +35,34 @@ class Model:
 
         Parameters
         ----------
-        actionSpace: action_space
+        actionSpace: ndarray
             The action space of the problem.
         state: tuple (float, float, float, float)
             The observation state to find an action for.
         
         Returns
         -------
-        int - The action to perform.
+        int: The action to perform.
         """
         if random() > EPSILON: # Check for exploration
-            return max(self.memory[state][0], self.memory[state][1])
+            if self.memory[state][0] > self.memory[state][1]:
+                return 0
+            else:
+                return 1
         else:
             return actionSpace.sample()
+
+    def convertState(self, obsSpace):
+        """
+        Converts an observation state into a tuple state that can be stored.
+
+        Parameters
+        ----------
+        obsSpace: ndarray
+            The observation state to convert.
+
+        Returns
+        -------
+        tuple (float, float, float, float): The state as a tuple.
+        """
+        return (obsSpace[0], obsSpace[1], obsSpace[2], obsSpace[3])
