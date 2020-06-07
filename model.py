@@ -66,10 +66,7 @@ class Model:
         int: The action to perform.
         """
         if random() > EPSILON: # Check for exploration
-            if self.memory[state][0] > self.memory[state][1]:
-                return 0
-            else:
-                return 1
+            return max(self.memory[state], key=self.memory[state].get)
         else:
             return actionSpace.sample()
 
