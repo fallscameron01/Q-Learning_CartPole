@@ -26,6 +26,8 @@ if __name__ == '__main__':
             newState = model.convertState(newObsSpace)
             model.saveState(newState)
 
+            model.updateState(reward, state, action, newState)
+
             obsSpace = newObsSpace
             state = newState
 
