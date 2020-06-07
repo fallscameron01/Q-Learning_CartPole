@@ -9,7 +9,7 @@ EPSILON = 0.1 # Exploration Rate
 
 class Model:
     def __init__(self):
-        self.memory = {} # {(observation space) : {action : reward}}
+        self.memory = {} # {(observation space) : {action : weight}}
     
     def saveState(self, state):
         """
@@ -28,6 +28,27 @@ class Model:
 
         if state not in self.memory:
             self.memory.update({state : {0 : INITIAL_WEIGHT, 1 : INITIAL_WEIGHT}})
+
+    def updateState(self, reward, state, action, nextState):
+        """
+        Updates the state saved in memory using the Q-Learning formula.
+
+        Parameters
+        ----------
+        reward: int
+            The reward of the action at the current state.
+        state: tuple (float, float, float, float)
+            The state the action was performed at.
+        action: int
+            The action taken.
+        nextState: tuple (float, float, float, float)
+            The next state of the environment.
+
+        Returns
+        -------
+        none
+        """
+        self.memory[state][action] += APLHA * (reward + GAMMA * max(self.memory[nextState].values()) - self.memory[state][action])
     
     def getAction(self, actionSpace, state):
         """
@@ -65,4 +86,5 @@ class Model:
         -------
         tuple (float, float, float, float): The state as a tuple.
         """
+        # TODO: Implement Rounding/Range to handle the large number of decimals
         return (obsSpace[0], obsSpace[1], obsSpace[2], obsSpace[3])
