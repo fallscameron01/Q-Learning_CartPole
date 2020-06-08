@@ -1,15 +1,29 @@
 from random import random
+from math import radians
 
 import numpy as np
 import gym
 
-APLHA = 0.1 # Learning Rate
-GAMMA = 0.90 # Discount Factor
-EPSILON = 0.1 # Exploration Rate
-
 class Model:
-    def __init__(self):
+    def __init__(self, env):
         self.memory = {} # {(observation space) : {action : weight}}
+
+        # Create discrete buckets for storing states
+        NUM_BUCKETS = [1, 1, 6, 12] # Number of Buckets for each observation value
+
+        CART_VEL_RANGE = .5 # Range of values to create bucket
+        POLE_VEL_RANGE = radians(50) # Range of values to create bucket
+
+        BUCKETS_CART_POS = np.linspace(env.observation_space.low[0], env.observation_space.high[0], num=NUM_BUCKETS[0])
+        BUCKETS_CART_VEL = np.linspace(-CART_VEL_RANGE, CART_VEL_RANGE, num=NUM_BUCKETS[1])
+        BUCKETS_POLE_ANG = np.linspace(env.observation_space.low[2], env.observation_space.high[2], num=NUM_BUCKETS[2])
+        BUCKETS_POLE_VEL = np.linspace(-POLE_VEL_RANGE, POLE_VEL_RANGE, num=NUM_BUCKETS[3])
+
+        self.buckets = np.array([BUCKETS_CART_POS, BUCKETS_CART_VEL, BUCKETS_POLE_ANG, BUCKETS_POLE_VEL])
+        
+        self.alpha = .6 # Learning Rate
+        self.gamma = 1 # Discount Factor
+        self.epsilon = 1 # Exploration Rate
     
     def saveState(self, state):
         """
@@ -48,7 +62,7 @@ class Model:
         -------
         none
         """
-        self.memory[state][action] += APLHA * (reward + GAMMA * max(self.memory[nextState].values()) - self.memory[state][action])
+        self.memory[state][action] += self.alpha * (reward + self.gamma * max(self.memory[nextState].values()) - self.memory[state][action])
     
     def getAction(self, actionSpace, state):
         """
@@ -65,12 +79,12 @@ class Model:
         -------
         int: The action to perform.
         """
-        if random() > EPSILON: # Check for exploration
+        if random() > self.epsilon: # Check for exploration
             return max(self.memory[state], key=self.memory[state].get)
         else:
             return actionSpace.sample()
 
-    def convertState(self, obsSpace):
+    def convertState(self, obsSpace, env, episode):
         """
         Converts an observation state into a tuple state that can be stored.
 
@@ -83,5 +97,26 @@ class Model:
         -------
         tuple (float, float, float, float): The state as a tuple.
         """
-        # TODO: Implement Rounding/Range to handle the large number of decimals
-        return (obsSpace[0], obsSpace[1], obsSpace[2], obsSpace[3])
+        self._updateParams(episode)
+
+        cartPos = np.digitize(obsSpace[0], self.buckets[0])
+        cartVel = np.digitize(obsSpace[0], self.buckets[1])
+        poleAng = np.digitize(obsSpace[0], self.buckets[2])
+        poleVel = np.digitize(obsSpace[0], self.buckets[3])
+
+        return (cartPos, cartVel, poleAng, poleVel)
+
+    def getMemory(self):
+        """
+        Returns the saved memory (the q table).
+
+        Returns
+        -------
+        dictionary: The saved q table.
+        """
+        return self.memory
+
+    def _updateParams(self, episode):
+        if(episode > 300):
+            self.alpha = .1
+            self.epsilon = .1

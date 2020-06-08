@@ -4,16 +4,17 @@ import gym
 from model import Model
 
 if __name__ == '__main__':
-    NUM_EPISODES = 500
+    NUM_EPISODES = 1000
     MAX_STEPS = 500
-
-    model = Model()
 
     env = gym.make("CartPole-v1")
 
+    model = Model(env)
+
     for episode in range(NUM_EPISODES):
+        episodeReward = 0
         obsSpace = env.reset()
-        state = model.convertState(obsSpace)
+        state = model.convertState(obsSpace, env, episode)
         model.saveState(state)
 
         for step in range(MAX_STEPS):
@@ -23,7 +24,9 @@ if __name__ == '__main__':
 
             newObsSpace, reward, done, info = env.step(action)
 
-            newState = model.convertState(newObsSpace)
+            episodeReward += reward
+
+            newState = model.convertState(newObsSpace, env, episode)
             model.saveState(newState)
 
             model.updateState(reward, state, action, newState)
@@ -32,7 +35,8 @@ if __name__ == '__main__':
             state = newState
 
             if done:
-                print("Episode", episode, "finished after", step, "steps")
+                print("Episode", episode, "finished after", step, "steps, with reward", episodeReward)
                 break
 
+    print(model.getMemory())
     env.close()
