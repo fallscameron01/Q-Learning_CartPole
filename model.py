@@ -5,7 +5,6 @@ Model is used to handle q-learning for the environment.
 from random import random
 from math import radians
 
-import numpy as np
 import gym
 
 class Model:
@@ -104,7 +103,7 @@ class Model:
         """
         self._updateParams(episode)
 
-        state = np.arange(len(self.NUM_BUCKETS))
+        state = [0, 0, 0, 0]
 
         for i in range(len(self.NUM_BUCKETS)):
             ratio = self._getRatio(i, obsSpace[i])
