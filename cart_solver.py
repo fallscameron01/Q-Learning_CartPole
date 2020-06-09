@@ -4,21 +4,23 @@ import gym
 from model import Model
 
 if __name__ == '__main__':
-    NUM_EPISODES = 1000
-    MAX_STEPS = 500
+    MAX_EPISODES = 1000 # Max number of episodes
+    MAX_STEPS = 500 # Max steps per episode
+    EPS_TO_RENDER = 500 # Number of episodes until rendering starts
 
     env = gym.make("CartPole-v1")
 
     model = Model(env)
 
-    for episode in range(NUM_EPISODES):
+    for episode in range(MAX_EPISODES):
         episodeReward = 0
         obsSpace = env.reset()
         state = model.convertState(obsSpace, env, episode)
         model.saveState(state)
 
         for step in range(MAX_STEPS):
-            env.render()
+            if episode > EPS_TO_RENDER:
+                env.render()
 
             action = model.getAction(env.action_space, state)
 
