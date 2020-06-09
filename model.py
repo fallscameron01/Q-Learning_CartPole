@@ -1,3 +1,7 @@
+"""
+Model is used to handle q-learning for the environment.
+"""
+
 from random import random
 from math import radians
 
@@ -5,6 +9,14 @@ import numpy as np
 import gym
 
 class Model:
+    """
+    Model of q-learning for the environment.
+
+    Parameters
+    ----------
+    env: environment
+        The environment being used.
+    """
     def __init__(self, env):
         self.memory = {} # {(observation space) : {action : weight}}
 
@@ -118,10 +130,37 @@ class Model:
         return self.memory
 
     def _updateParams(self, episode):
-        if(episode > 225):
+        """
+        Updates the parameters for the q-learning function after a certain number of episodes.
+
+        Parameters
+        ----------
+        episode: int
+            The current episode.
+
+        Returns
+        -------
+        none
+        """
+        CHANGE_AFTER = 225
+
+        if(episode > CHANGE_AFTER):
             self.alpha = .1
             self.epsilon = .1
 
     def _getRatio(self, index, data):
-        return (data + abs(self.LOWER_BOUNDS[index])) / (self.UPPER_BOUNDS[index] - self.LOWER_BOUNDS[index])
+        """
+        Returns the ratio for a observation. The ratio is the amount into the discrete range.
 
+        Parameters
+        ----------
+        index: int
+            The index of the data in the observation space.
+        data: float
+            The data from the current observation space.
+
+        Returns
+        -------
+        float: The ratio of the data in the discrete range.
+        """
+        return (data + abs(self.LOWER_BOUNDS[index])) / (self.UPPER_BOUNDS[index] - self.LOWER_BOUNDS[index])

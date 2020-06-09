@@ -1,3 +1,7 @@
+"""
+Handles running the environment. Uses Model with q-learning to solve the CartPole-v1 environment from gym.
+"""
+
 import numpy as np
 import gym
 
