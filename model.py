@@ -9,19 +9,12 @@ class Model:
         self.memory = {} # {(observation space) : {action : weight}}
 
         # Create discrete buckets for storing states
-        NUM_BUCKETS = [1, 1, 6, 12] # Number of Buckets for each observation value
+        self.NUM_BUCKETS = [1, 1, 6, 12] # Number of Buckets for each observation value
 
-        CART_VEL_RANGE = .5 # Range of values to create bucket
-        POLE_VEL_RANGE = radians(50) # Range of values to create bucket
+        self.UPPER_BOUNDS = [env.observation_space.high[0], 0.5, env.observation_space.high[2], radians(50)]
+        self.LOWER_BOUNDS = [env.observation_space.low[0], -0.5, env.observation_space.low[2], -radians(50)]
 
-        BUCKETS_CART_POS = np.linspace(env.observation_space.low[0], env.observation_space.high[0], num=NUM_BUCKETS[0])
-        BUCKETS_CART_VEL = np.linspace(-CART_VEL_RANGE, CART_VEL_RANGE, num=NUM_BUCKETS[1])
-        BUCKETS_POLE_ANG = np.linspace(env.observation_space.low[2], env.observation_space.high[2], num=NUM_BUCKETS[2])
-        BUCKETS_POLE_VEL = np.linspace(-POLE_VEL_RANGE, POLE_VEL_RANGE, num=NUM_BUCKETS[3])
-
-        self.buckets = np.array([BUCKETS_CART_POS, BUCKETS_CART_VEL, BUCKETS_POLE_ANG, BUCKETS_POLE_VEL])
-        
-        self.alpha = .6 # Learning Rate
+        self.alpha = .5 # Learning Rate
         self.gamma = 1 # Discount Factor
         self.epsilon = 1 # Exploration Rate
     
@@ -99,12 +92,20 @@ class Model:
         """
         self._updateParams(episode)
 
-        cartPos = np.digitize(obsSpace[0], self.buckets[0])
-        cartVel = np.digitize(obsSpace[0], self.buckets[1])
-        poleAng = np.digitize(obsSpace[0], self.buckets[2])
-        poleVel = np.digitize(obsSpace[0], self.buckets[3])
+        state = np.arange(len(self.NUM_BUCKETS))
 
-        return (cartPos, cartVel, poleAng, poleVel)
+        for i in range(len(self.NUM_BUCKETS)):
+            ratio = self._getRatio(i, obsSpace[i])
+            pos = int(round(ratio * (self.NUM_BUCKETS[i]-1)))
+
+            # Fit to range
+            pos = max(0, pos)
+            pos = min(self.NUM_BUCKETS[i]-1, pos)
+
+            state[i] = pos
+        
+        return tuple(state)
+        
 
     def getMemory(self):
         """
@@ -117,6 +118,10 @@ class Model:
         return self.memory
 
     def _updateParams(self, episode):
-        if(episode > 300):
+        if(episode > 225):
             self.alpha = .1
             self.epsilon = .1
+
+    def _getRatio(self, index, data):
+        return (data + abs(self.LOWER_BOUNDS[index])) / (self.UPPER_BOUNDS[index] - self.LOWER_BOUNDS[index])
+
