@@ -1,5 +1,5 @@
 # Q-Learning_CartPole
- Solves the Cart Pole problem using q-learning in the Python Gym library.
+ Solves the Cart Pole problem using q-learning in the Python OpenAI Gym library.
 
 ## How it Works
 The program uses the Model class to handle the creation of a Q-State Table. The Model class discretizes the values in the observation space to
@@ -14,3 +14,22 @@ model. Rewards at each action are passed to the Model for use in the Q-Learning 
 Python Packages:
 
 - gym
+
+## Inspiration
+Here are some sources of inspiration I used while creating the project:
+
+https://github.com/coledie/q-learning
+
+https://towardsdatascience.com/cartpole-introduction-to-reinforcement-learning-ed0eb5b58288
+
+https://gym.openai.com/evaluations/eval_EIcM1ZBnQW2LBaFN6FY65g/
+
+### Other Helpful Links
+
+https://gym.openai.com/envs/CartPole-v1/
+
+https://en.wikipedia.org/wiki/Q-learning
+
+https://en.wikipedia.org/wiki/Discretization
+
+https://en.wikipedia.org/wiki/Discretization_of_continuous_features

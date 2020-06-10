@@ -100,6 +100,10 @@ class Model:
         Returns
         -------
         tuple (float, float, float, float): The state as a tuple.
+
+        Note
+        ----
+        Code for discretizing the observation space is based on https://gist.github.com/n1try/87b442fce7f7d58606f462191c6d6033
         """
         self._updateParams(episode)
 
